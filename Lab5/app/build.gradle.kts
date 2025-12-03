@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.vovan.lab5"
+    namespace = "com.lab4"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.vovan.lab5"
+        applicationId = "com.lab4"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
@@ -67,7 +67,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 
     // Connecting Navigation Component library to project
     implementation(libs.androidx.navigation3.ui)

@@ -14,22 +14,26 @@ class WeatherForecastScreenViewModel(
 ) : ViewModel() {
 
     private val _weatherForecastResponseStateFlow = MutableStateFlow<WeatherForecastResponse?>(null)
-    val weatherForecastResponseStateFlow: StateFlow<WeatherForecastResponse?>
-        get() = _weatherForecastResponseStateFlow
+    val weatherForecastResponseStateFlow: StateFlow<WeatherForecastResponse?> get() = _weatherForecastResponseStateFlow
 
-    init {
+    private val _cityName = MutableStateFlow("")
+    val cityName: StateFlow<String> get() = _cityName
+
+    fun updateCity(name: String) {
+        _cityName.value = name
+    }
+
+    fun loadForecast() {
+        val city = _cityName.value
+        if (city.isBlank()) return
         viewModelScope.launch {
-            /**
-             * serverModule.getWeatherForecast(...) - call to api to get weather forecast
-             * - return WeatherForecastResponse object
-             * - must be in coroutine (parallel thread) viewModelScope.launch {...here}
-             */
-            val weatherForecastResponse = serverModule.getWeatherForecast(
-                lat = 50.4851493,
-                lon = 30.4721233,
-            )
-            Log.e("WeatherForecastScreenViewModel", "$weatherForecastResponse")
-            _weatherForecastResponseStateFlow.value = weatherForecastResponse
+            try {
+                val forecast = serverModule.getWeatherForecastByCity(city)
+                _weatherForecastResponseStateFlow.value = forecast
+            } catch (e: Exception) {
+                Log.e("ForecastViewModel", "Error: ${e.message}")
+                _weatherForecastResponseStateFlow.value = null
+            }
         }
     }
 }

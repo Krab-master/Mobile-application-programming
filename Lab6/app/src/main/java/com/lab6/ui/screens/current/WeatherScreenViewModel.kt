@@ -10,26 +10,30 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeatherScreenViewModel(
-    private val serverModule: ServerApi // Server module - communication interface with API
+    private val serverModule: ServerApi
 ) : ViewModel() {
 
     private val _weatherResponseStateFlow = MutableStateFlow<WeatherResponse?>(null)
-    val weatherResponseStateFlow: StateFlow<WeatherResponse?>
-        get() = _weatherResponseStateFlow
+    val weatherResponseStateFlow: StateFlow<WeatherResponse?> get() = _weatherResponseStateFlow
 
-    init {
+    private val _cityName = MutableStateFlow("")
+    val cityName: StateFlow<String> get() = _cityName
+
+    fun updateCity(name: String) {
+        _cityName.value = name
+    }
+
+    fun loadWeather() {
+        val city = _cityName.value
+        if (city.isBlank()) return
         viewModelScope.launch {
-            /**
-             * serverModule.getCurrentWeather(...) - call to api to get current weather
-             * - return WeatherResponse object
-             * - must be in coroutine (parallel thread) viewModelScope.launch {...here}
-             */
-            val weatherResponse = serverModule.getCurrentWeather(
-                lat = 50.4851493,
-                lon = 30.4721233,
-            )
-            Log.e("WeatherScreenViewModel", "$weatherResponse")
-            _weatherResponseStateFlow.value = weatherResponse
+            try {
+                val weatherResponse = serverModule.getCurrentWeatherByCity(city)
+                _weatherResponseStateFlow.value = weatherResponse
+            } catch (e: Exception) {
+                Log.e("WeatherViewModel", "Error: ${e.message}")
+                _weatherResponseStateFlow.value = null
+            }
         }
     }
 }

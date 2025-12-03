@@ -10,7 +10,7 @@ import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.lab6.ui.screens.current.WeatherScreen
 import com.lab6.ui.screens.forecast.WeatherForecastScreen
-import com.lab6.ui.screens.manu.MenuScreen
+import com.lab6.ui.screens.menu.MenuScreen
 import kotlinx.serialization.Serializable
 
 @Serializable

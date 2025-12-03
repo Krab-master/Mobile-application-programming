@@ -50,39 +50,28 @@ class GeminiAIRepository {
      * generateTextParList(): List<TetPairs>? - the function which makes request
      *          to the AI model to generate abstract text pairs bby using prompt
      * */
-    suspend fun generateTextParList(): List<TextPair>? {
-        // The request must be surrounded in try-catch to handle the failure
-        // For example: if the result is weird and can't be parsed to List<TextPair> it will be properly handled and return Null
+    suspend fun generateQuizByTopic(topic: String): List<TextPair>? {
         return try {
-            // withContext(Dispatchers.IO) will redirect request to non-UI thread (to avoid blocking UI)
             withContext(Dispatchers.IO) {
-                // request to model
-                val response = aiModel.generateContent(PROMPT_TEXT_PAIR_LIST)
+                val prompt = """
+                Generate 5 quiz questions with short answers about "$topic".
+                Return ONLY a valid JSON array in this format:
+                [
+                  {"question": "string", "answer": "string"},
+                  ...
+                ]
+            """.trimIndent()
 
-                // get raw response
+                val response = aiModel.generateContent(prompt)
                 val outputRaw = response.text ?: ""
-
-                // clear response to JSON
-                val outputJson = outputRaw
-                    .replace(Regex("```json|```"), "")
-                    .trim()
-
-
-                // parse JSON text to List<TextPair>
+                val outputJson = outputRaw.replace(Regex("```json|```"), "").trim()
                 val type = object : TypeToken<List<TextPair>>() {}.type
-                val textPairList: List<TextPair> = gson.fromJson(outputJson,type)
-
-                // log to see the parsed list in LogCat
-                Log.i("GeminiAIRepository", "textPairList = $textPairList")
-
-                // return result
-                textPairList
+                gson.fromJson<List<TextPair>>(outputJson, type)
             }
         } catch (e: Exception) {
-            // log exception if it occurs
-            Log.e("GeminiAIRepository", "error - $e")
-            // return Null if error occurs
+            Log.e("GeminiAIRepository", "Error generating quiz: $e")
             null
         }
     }
+
 }

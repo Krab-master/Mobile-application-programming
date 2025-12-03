@@ -1,12 +1,8 @@
 package com.lab6.ui.screens.current
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,23 +14,40 @@ fun WeatherScreen(
     viewModel: WeatherScreenViewModel = koinViewModel()
 ) {
     val weatherResponseState = viewModel.weatherResponseStateFlow.collectAsState()
+    val city by viewModel.cityName.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Weather Screen", fontSize = 22.sp, modifier = Modifier.fillMaxWidth())
-        Text(
-            "Coordinates: lat=${weatherResponseState.value?.coord?.lat} lon=${weatherResponseState.value?.coord?.lon}",
-            fontSize = 16.sp,
+        Text("Weather by City", fontSize = 22.sp)
+
+        OutlinedTextField(
+            value = city,
+            onValueChange = { viewModel.updateCity(it) },
+            label = { Text("Enter city name") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
+                .padding(top = 12.dp)
         )
-        weatherResponseState.value?.main?.let { weatherMain ->
-            // custom view for WeatherMain object
-            WeatherMainCustomView(weatherMain = weatherMain)
+
+        Button(
+            onClick = { viewModel.loadWeather() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp)
+        ) {
+            Text("Get Weather")
+        }
+
+        weatherResponseState.value?.let { response ->
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                "Coordinates: lat=${response.coord.lat}, lon=${response.coord.lon}",
+                fontSize = 16.sp
+            )
+            WeatherMainCustomView(weatherMain = response.main)
         }
     }
 }

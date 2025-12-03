@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
 data object EntryScreenRoute : NavKey
 
 @Serializable
-data object GameScreenRoute : NavKey
+data class GameScreenRoute(val topic: String) : NavKey
 
 @Composable
 fun NavigationGraph(
@@ -34,9 +34,11 @@ fun NavigationGraph(
         ),
         entryProvider = entryProvider {
             entry<EntryScreenRoute> {
-                EntryScreen(onGameScreen = { backStack.add(GameScreenRoute) })
+                EntryScreen { topic -> backStack.add(GameScreenRoute(topic)) }
             }
-            entry<GameScreenRoute> { GameScreen() }
+            entry<GameScreenRoute> { route ->
+                GameScreen(topic = route.topic)
+            }
         }
     )
 }

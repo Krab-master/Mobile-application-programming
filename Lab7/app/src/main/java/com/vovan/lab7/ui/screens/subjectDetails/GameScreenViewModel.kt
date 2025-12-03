@@ -10,30 +10,20 @@ import kotlinx.coroutines.launch
 
 
 class GameScreenViewModel(
-    val geminiAIRepository: GeminiAIRepository
+    private val repository: GeminiAIRepository
 ) : ViewModel() {
 
-    // stateFlows to store the state of loading
-    private val _isLoadingStateFlow = MutableStateFlow<Boolean>(false)
-    val isLoadingStateFlow: StateFlow<Boolean>
-        get() = _isLoadingStateFlow
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
-    // stateFlows for storing current generated List<TextPair> data
-    private val _textPairListStateFlow = MutableStateFlow<List<TextPair>?>(null)
-    val textPairListStateFlow: StateFlow<List<TextPair>?>
-        get() = _textPairListStateFlow
+    private val _quizList = MutableStateFlow<List<TextPair>?>(null)
+    val quizList: StateFlow<List<TextPair>?> get() = _quizList
 
-    // request to the geminiAIRepository to generate list of TextPair
-    fun requestGameData(){
+    fun loadQuiz(topic: String) {
         viewModelScope.launch {
-            // change loading state to start loading (loading progress on UI is visible)
-            _isLoadingStateFlow.value = true
-
-            // request generated data and storing in stateFlow
-            _textPairListStateFlow.value = geminiAIRepository.generateTextParList()
-
-            // change loading state to stop loading (loading progress on UI is invisible)
-            _isLoadingStateFlow.value = false
+            _isLoading.value = true
+            _quizList.value = repository.generateQuizByTopic(topic)
+            _isLoading.value = false
         }
     }
 }

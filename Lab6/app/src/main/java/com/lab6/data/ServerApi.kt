@@ -9,7 +9,7 @@ import retrofit2.http.Query
  * ServerApi - interface with functions-mappers for API requests
  * - will be used by Retrofit library to generate convenient API class of communication with API
  */
-interface ServerApi {
+interface  ServerApi {
     /**
      * @GET - annotation that marks functions as GET Request
         - contains "/data/2.5/weather" - request to get current data of api
@@ -17,10 +17,10 @@ interface ServerApi {
         > investigate mode: @GET @POST
     */
     @GET("/data/2.5/weather")
-    suspend fun getCurrentWeather(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
+    suspend fun getCurrentWeatherByCity(
+        @Query("q") city: String,
         @Query("appid") apiId: String = "8889c1feba30ba15f018e6919a6bc4e2",
+        @Query("units") units: String = "metric", // щоб було в °C
     ): WeatherResponse // return data class of response
 
     /**
@@ -29,9 +29,9 @@ interface ServerApi {
         [described here: https://openweathermap.org/forecast5]
      */
     @GET("/data/2.5/forecast")
-    suspend fun getWeatherForecast(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
+    suspend fun getWeatherForecastByCity(
+        @Query("q") city: String,
         @Query("appid") apiId: String = "8889c1feba30ba15f018e6919a6bc4e2",
+        @Query("units") units: String = "metric",
     ): WeatherForecastResponse // return data class of response
 }
