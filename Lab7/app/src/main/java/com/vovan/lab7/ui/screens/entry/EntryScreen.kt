@@ -56,5 +56,3 @@ fun EntryScreen(onStartGame: (String) -> Unit) {
         }
     }
 }
-
-

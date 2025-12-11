@@ -8,7 +8,8 @@ import com.lab4.data.entity.SubjectEntity
 import com.lab4.data.entity.SubjectLabEntity
 
 @Database(entities = [SubjectEntity::class, SubjectLabEntity::class], version = 1)
-abstract class Lab4Database : RoomDatabase() {
+abstract class Lab4Database : RoomDatabase()
+{
     abstract val subjectsDao: SubjectDao
     abstract val subjectLabsDao: SubjectLabsDao
 }
